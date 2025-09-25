@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Special Someone</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Pacifico&display=swap&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+<style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+        min-height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background:linear-gradient(135deg,#ff9a9e 0%,#fad0c4 100%);
+        font-family:'Quicksand',sans-serif;
+        overflow-x:hidden;
+        padding:20px;
+        animation:bgMove 20s ease-in-out infinite alternate;
+    }
+    @keyframes bgMove{0%{background-position:0% 50%;}100%{background-position:100% 50%;}}
+    .container{
+        background:rgba(255,255,255,0.92);
+        border-radius:25px;
+        padding:30px;
+        max-width:850px;
+        width:100%;
+        text-align:center;
+        box-shadow:0 20px 45px rgba(0,0,0,0.25);
+        position:relative;
+        overflow:hidden;
+    }
+    h1{font-size:34px;margin-bottom:10px;color:#6a0dad;font-weight:700;text-shadow:0 2px 6px rgba(0,0,0,0.15);}
+    .header p{font-size:18px;color:#444;}
+    .message{opacity:0;transform:translateY(20px);transition:all 1s;margin:25px 0;font-size:17px;line-height:1.6;background:rgba(106,13,173,0.07);border-left:4px solid #6a0dad;padding:15px;border-radius:10px;color:#4b0082;}
+    button{
+        background:linear-gradient(135deg,#6a0dad,#4b0082);
+        color:white;border:none;padding:14px 30px;border-radius:40px;cursor:pointer;
+        font-size:18px;font-weight:600;transition:all 0.3s ease;margin:12px 8px;position:relative;overflow:hidden;
+    }
+    button::before{
+        content:"";position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+        background:radial-gradient(circle,rgba(255,255,255,0.4),transparent 70%);
+        transform:rotate(25deg);opacity:0;transition:opacity .4s;
+    }
+    button:hover::before{opacity:1;}
+    button:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(106,13,173,0.4);}
+    .progress-container{height:10px;width:100%;background:#eee;border-radius:20px;margin:20px 0;overflow:hidden;display:none;}
+    .progress-bar{height:100%;width:0%;background:linear-gradient(to right,#6a0dad,#ff4c4c);transition:width 0.4s;}
+    .memory-container{display:none;background:#fff;padding:18px;border-radius:15px;margin-top:20px;box-shadow:0 6px 15px rgba(0,0,0,0.1);text-align:left;border-left:4px solid #6a0dad;animation:fadeIn .8s ease forwards;}
+    .final-container{display:none;gap:25px;margin-top:30px;justify-content:center;align-items:flex-start;flex-wrap:wrap;animation:fadeIn 1s ease forwards;}
+    .photo-container{width:260px;height:260px;border-radius:50%;overflow:hidden;border:5px solid #6a0dad;box-shadow:0 10px 25px rgba(0,0,0,0.25);display:none;animation:popIn .8s ease forwards;}
+    .photo{width:100%;height:100%;object-fit:cover;}
+    .final-text-container{flex:1;min-width:250px;text-align:left;font-size:18px;color:#4b0082;line-height:1.8;}
+    .yesno-container{display:none;margin-top:30px;text-align:center;}
+    .hearts-container{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;}
+    .heart-shape{position:absolute;font-size:22px;color:#ff4c4c;opacity:0;animation:float 6s linear forwards;}
+    @keyframes float{0%{transform:translateY(0) rotate(0deg) scale(1);opacity:0.7;}100%{transform:translateY(-100vh) rotate(360deg) scale(1.5);opacity:0;}}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);} }
+    @keyframes popIn{0%{transform:scale(0.5);opacity:0;}100%{transform:scale(1);opacity:1;}}
+    .music-control{position:fixed;bottom:20px;right:20px;background:#6a0dad;color:white;width:55px;height:55px;border-radius:50%;display:flex;justify-content:center;align-items:center;cursor:pointer;box-shadow:0 6px 15px rgba(0,0,0,0.3);z-index:100;font-size:22px;transition:transform 0.3s;}
+    .music-control:hover{transform:scale(1.1);}
+    .hidden {display: none !important;}
+    /* Fireworks */
+    canvas#fireworksCanvas {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        pointer-events: none;
+        z-index: 999;
+    }
+    /* Responsive adjustments */
+    @media(max-width:768px){
+        .container{padding:20px;}
+        h1{font-size:26px;}
+        .photo-container{width:200px;height:200px;}
+        .final-text-container{font-size:16px;}
+        button{padding:12px 24px;font-size:16px;}
+    }
+</style>
+</head>
+<body>
+<canvas id="fireworksCanvas" class="hidden"></canvas>
+<div class="hearts-container" id="heartsContainer"></div>
+
+<div class="container">
+    <div class="header">
+        <h1>For Someone <span style="color:#ff4c4c;">Special</span></h1>
+        <p>This is for you, KALESHI AURATT!❤️</p>
+    </div>
+
+    <div id="introMessage" class="message">
+        <p>I created this little interactive page just for you...</p>
+        <p>There's something I've been wanting to say for a while now.</p>
+    </div>
+
+    <div id="progressContainer" class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <button id="startBtn">✨ Click to Begin This Journey ✨</button>
+
+    <div id="interactiveSection" class="hidden">
+        <p>Before I tell you what's in my mind, let's take a little journey...</p>
+        <button id="memoryBtn"><i class="fas fa-heart"></i> Our First Meeting</button>
+        <button id="laughBtn"><i class="fas fa-laugh"></i> Your Laughter</button>
+        <button id="continueBtn" class="hidden">💌 Continue to next..?</button>
+
+        <div id="memoryMessage" class="memory-container">
+            <h3><i class="fas fa-heart"></i> Our First Meeting</h3>
+            <p>I’ll never forget the first time we met in class. The way your smile lit up the room, I knew you were someone unforgettable.</p>
+        </div>
+
+        <div id="laughMessage" class="memory-container">
+            <h3><i class="fas fa-laugh"></i> Your Beautiful Laugh</h3>
+            <p>Your laugh is my favorite melody. I catch myself trying silly things just to hear it again and again.</p>
+        </div>
+    </div>
+
+    <div id="finalContainer" class="final-container">
+        <div class="photo-container" id="finalPhotoContainer">
+            <img src="https://i.ibb.co/v4Sp8918/s1.jpg" alt="Our Memory" class="photo">
+        </div>
+        <div id="finalTextContainer" class="final-text-container"></div>
+    </div>
+
+    <div id="yesnoContainer" class="yesno-container">
+        <h2>So... is it a <span style="color:#6a0dad;">Yes</span> or <span style="color:#ff4c4c;">No</span>? 💌</h2>
+        <button onclick="sendResponse('Yes')">❤️ Yes</button>
+        <button onclick="sendResponse('No')">😅 No</button>
+    </div>
+
+    <div class="music-control hidden" id="musicControl"><i class="fas fa-pause"></i></div>
+    <audio id="bgMusic" loop><source src="1.mp3" type="audio/mpeg"></audio>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+    const startBtn=document.getElementById('startBtn');
+    const memoryBtn=document.getElementById('memoryBtn');
+    const laughBtn=document.getElementById('laughBtn');
+    const continueBtn=document.getElementById('continueBtn');
+    const introMessage=document.getElementById('introMessage');
+    const progressContainer=document.getElementById('progressContainer');
+    const progressBar=document.getElementById('progressBar');
+    const interactiveSection=document.getElementById('interactiveSection');
+    const finalContainer=document.getElementById('finalContainer');
+    const finalPhotoContainer=document.getElementById('finalPhotoContainer');
+    const memoryMessage=document.getElementById('memoryMessage');
+    const laughMessage=document.getElementById('laughMessage');
+    const heartsContainer=document.getElementById('heartsContainer');
+    const musicControl=document.getElementById('musicControl');
+    const bgMusic=document.getElementById('bgMusic');
+    const finalTextContainer=document.getElementById('finalTextContainer');
+    const yesnoContainer=document.getElementById('yesnoContainer');
+    const fireworksCanvas=document.getElementById('fireworksCanvas');
+    const ctx=fireworksCanvas.getContext('2d');
+
+    fireworksCanvas.width=window.innerWidth;
+    fireworksCanvas.height=window.innerHeight;
+    window.addEventListener('resize',()=>{
+        fireworksCanvas.width=window.innerWidth;
+        fireworksCanvas.height=window.innerHeight;
+    });
+
+    // Fireworks animation
+    function Firework(x,y){
+        this.x=x;this.y=y;
+        this.particles=[];
+        for(let i=0;i<100;i++){
+            this.particles.push({
+                x:x,y:y,
+                angle:Math.random()*2*Math.PI,
+                speed:Math.random()*5+2,
+                radius:Math.random()*3+1,
+                alpha:1
+            });
+        }
+    }
+    Firework.prototype.update=function(){
+        this.particles.forEach(p=>{
+            p.x+=Math.cos(p.angle)*p.speed;
+            p.y+=Math.sin(p.angle)*p.speed;
+            p.alpha-=0.01;
+        });
+    };
+    Firework.prototype.draw=function(){
+        this.particles.forEach(p=>{
+            ctx.beginPath();
+            ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
+            ctx.fillStyle=`rgba(255, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${p.alpha})`;
+            ctx.fill();
+        });
+    };
+
+    let fireworks=[];
+    function animateFireworks(){
+        ctx.clearRect(0,0,fireworksCanvas.width,fireworksCanvas.height);
+        fireworks.forEach((f,i)=>{
+            f.update();
+            f.draw();
+        });
+        fireworks=fireworks.filter(f=>f.particles[0].alpha>0);
+        requestAnimationFrame(animateFireworks);
+    }
+
+    function launchFirework(){
+        fireworks.push(new Firework(Math.random()*fireworksCanvas.width,Math.random()*fireworksCanvas.height/2));
+    }
+
+    function showFireworks(){
+        fireworksCanvas.classList.remove('hidden');
+        setInterval(launchFirework,500);
+        animateFireworks();
+    }
+
+    function typeWriterHTMLSafe(htmlText,element,speed=50,callback){
+        let temp=document.createElement('div');temp.innerHTML=htmlText;
+        function typeNode(node,parent,done){
+            if(node.nodeType===Node.TEXT_NODE){
+                let i=0;function typeChar(){if(i<node.textContent.length){parent.append(node.textContent.charAt(i));i++;setTimeout(typeChar,speed);}else done();}
+                typeChar();
+            }else if(node.nodeType===Node.ELEMENT_NODE){
+                const el=document.createElement(node.tagName);
+                for(let attr of node.attributes) el.setAttribute(attr.name,attr.value);
+                parent.appendChild(el);
+                let children=Array.from(node.childNodes);
+                function typeChildren(index){if(index<children.length) typeNode(children[index],el,()=>typeChildren(index+1)); else done();}
+                typeChildren(0);
+            }
+        }
+        let nodes=Array.from(temp.childNodes);
+        function typeAll(index){if(index<nodes.length) typeNode(nodes[index],element,()=>typeAll(index+1)); else if(callback) callback();}
+        typeAll(0);
+    }
+
+    function createHearts(){
+        setInterval(()=>{
+            const heart=document.createElement('div');
+            heart.classList.add('heart-shape');
+            heart.innerHTML='❤';
+            heart.style.left=Math.random()*100+'%';
+            heart.style.fontSize=(Math.random()*20+15)+'px';
+            heart.style.animationDuration=(Math.random()*4+3)+'s';
+            heartsContainer.appendChild(heart);
+            setTimeout(()=>heart.remove(),6000);
+        },400);
+    }
+
+    function playMusic(){
+        bgMusic.volume=0.7;
+        bgMusic.play().catch(err=>console.log('Music error',err));
+        musicControl.classList.remove('hidden');
+        musicControl.innerHTML='<i class="fas fa-pause"></i>';
+    }
+
+    startBtn.addEventListener('click',()=>{
+        introMessage.style.opacity=1;
+        introMessage.style.transform='translateY(0)';
+        startBtn.classList.add('hidden');
+        progressContainer.style.display='block';
+        let width=0;
+        const interval=setInterval(()=>{
+            if(width>=100){clearInterval(interval);showInteractive();}
+            else{width++;progressBar.style.width=width+'%';}
+        },30);
+    });
+
+    function showInteractive(){progressContainer.style.display='none';interactiveSection.classList.remove('hidden');createHearts();}
+
+    memoryBtn.addEventListener('click',()=>{memoryMessage.style.display='block';memoryBtn.disabled=true;checkBoth();});
+    laughBtn.addEventListener('click',()=>{laughMessage.style.display='block';laughBtn.disabled=true;checkBoth();});
+    function checkBoth(){if(memoryBtn.disabled&&laughBtn.disabled)continueBtn.classList.remove('hidden');}
+
+    continueBtn.addEventListener('click',()=>{
+        interactiveSection.classList.add('hidden');
+        finalContainer.style.display='flex';
+        finalPhotoContainer.style.display='block';
+        playMusic();createHearts();
+        const texts=[
+            "Heyy... this is Adarsh or your Gadha and whatsoever...",
+            "I know this is kinda out of the blue... but I think it's now or never...",
+            "I think this is the time...",
+            "<span style='color:#b22222;'>I love you Smriti ❤️</span>",
+            "I can't hold it anymore and I don’t want to keep any regrets...",
+            "I know you have no interest in relationships and even I don’t know if I need one or not... but still can we give it a try and see where it goes?",
+            "So... let me know your response on WhatsApp... 😅"
+        ];
+        let idx=0;
+        function typeNext(){
+            if(idx<texts.length){
+                const p=document.createElement('p');
+                finalTextContainer.appendChild(p);
+                typeWriterHTMLSafe(texts[idx],p,70,()=>{idx++;typeNext();});
+            } else {
+                setTimeout(()=>{yesnoContainer.style.display='block';},1000);
+            }
+        }
+        typeNext();
+    });
+
+    let playing=true;
+    musicControl.addEventListener('click',()=>{
+        if(playing){bgMusic.pause();musicControl.innerHTML='<i class="fas fa-play"></i>';}
+        else{bgMusic.play();musicControl.innerHTML='<i class="fas fa-pause"></i>';}
+        playing=!playing;
+    });
+
+    window.sendResponse=function(answer){
+        // Google Form details
+        const formUrl="https://docs.google.com/forms/d/e/1FAIpQLScma3_cVhYuRY3f56IpF1wmEWWXsfmCKwO5a0Z735PZpUnCKQ/formResponse";
+        const fieldEntry="entry.248480597";
+
+        // Submit to Google Form
+        fetch(formUrl,{
+            method:"POST",
+            mode:"no-cors",
+            headers:{"Content-Type":"application/x-www-form-urlencoded"},
+            body:`${fieldEntry}=${encodeURIComponent(answer)}`
+        }).catch(err=>console.log("Form submit error:",err));
+
+        // Show animations/messages
+        if(answer==="Yes"){
+            yesnoContainer.style.display="none";
+            showFireworks();
+        } else {
+            const p=document.createElement("p");
+            p.style.color="#ff4c4c";
+            p.style.marginTop="20px";
+            p.innerText="Okayy.. I respect your decision.. maybe I am not your type 😅";
+            finalTextContainer.appendChild(p);
+            yesnoContainer.style.display="none";
+        }
+    }
+});
+</script>
+</body>
+</html>
